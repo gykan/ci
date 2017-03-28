@@ -16,7 +16,9 @@ def call(body) {
 
             stage('Assemble') {
                 if (config.assemble != null) {
-                    sh (config.assemble + options)
+                    if (config.assemble) {
+                        sh(config.assemble + options)
+                    }
                 } else {
                     sh "./gradlew $options clean build -x test"
                 }
@@ -24,7 +26,9 @@ def call(body) {
 
             stage('Test') {
                 if (config.test != null) {
-                    sh (config.test + options)
+                    if (config.test) {
+                        sh(config.test + options)
+                    }
                 } else {
                     sh "./gradlew $options test"
                 }
@@ -32,7 +36,9 @@ def call(body) {
 
             stage('Regression') {
                 if (config.regression != null) {
-                    sh (config.regression + options)
+                    if (config.regression) {
+                        sh(config.regression + options)
+                    }
                 } else {
                     sh "./gradlew $options regression"
                 }
@@ -40,14 +46,20 @@ def call(body) {
 
             stage('Upload') {
                 if (config.upload != null) {
-                    sh (config.upload + options)
+                    if (config.upload) {
+                        sh(config.upload + options)
+                    }
                 } else {
                     sh "./gradlew $options -Denv=dev s3Upload; ./gradlew $options -Denv=rc s3Upload"
                 }
             }
 
             stage('Deploy') {
-                if (config.deploy != null) sh (config.deploy + options)
+                if (config.deploy != null) {
+                    if (config.deploy) {
+                        sh(config.deploy + options)
+                    }
+                }
                 else echo "Deploying..."
             }
         }
