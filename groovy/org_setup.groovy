@@ -15,6 +15,32 @@ def configXml = """<?xml version='1.0' encoding='UTF-8'?>
   <actions/>
   <description></description>
   <properties>
+    <org.jenkinsci.plugins.workflow.libs.FolderLibraries plugin="workflow-cps-global-lib@2.7">
+      <libraries>
+        <org.jenkinsci.plugins.workflow.libs.LibraryConfiguration>
+          <name>build-library</name>
+          <retriever class="org.jenkinsci.plugins.workflow.libs.SCMSourceRetriever">
+            <scm class="org.jenkinsci.plugins.github_branch_source.GitHubSCMSource" plugin="github-branch-source@2.0.4">
+              <checkoutCredentialsId>SAME</checkoutCredentialsId>
+              <scanCredentialsId>git-credentials</scanCredentialsId>
+              <repoOwner>${orgName}</repoOwner>
+              <repository>ci</repository>
+              <includes>*</includes>
+              <excludes></excludes>
+              <buildOriginBranch>true</buildOriginBranch>
+              <buildOriginBranchWithPR>true</buildOriginBranchWithPR>
+              <buildOriginPRMerge>false</buildOriginPRMerge>
+              <buildOriginPRHead>false</buildOriginPRHead>
+              <buildForkPRMerge>true</buildForkPRMerge>
+              <buildForkPRHead>false</buildForkPRHead>
+            </scm>
+          </retriever>
+          <defaultVersion>master</defaultVersion>
+          <implicit>false</implicit>
+          <allowVersionOverride>true</allowVersionOverride>
+        </org.jenkinsci.plugins.workflow.libs.LibraryConfiguration>
+      </libraries>
+    </org.jenkinsci.plugins.workflow.libs.FolderLibraries>  
     <jenkins.branch.NoTriggerOrganizationFolderProperty>
       <branches>.*</branches>
     </jenkins.branch.NoTriggerOrganizationFolderProperty>
