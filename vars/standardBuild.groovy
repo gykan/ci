@@ -12,16 +12,16 @@ def call(body) {
                          [$class: 'UsernamePasswordMultiBinding', credentialsId: 'aws-credentials',
                           usernameVariable: 'AWS_ID', passwordVariable: 'AWS_KEY']]) {
 
-            options = ' -PartUsername=$ARTUSERNAME -PartPassword=$ARTPASSWORD -Daws.accessKeyId=$AWS_ID -Daws.secretKey=$AWS_KEY '
+            def options = ' -PartUsername=$ARTUSERNAME -PartPassword=$ARTPASSWORD -Daws.accessKeyId=$AWS_ID -Daws.secretKey=$AWS_KEY '
 
             stage('Assemble') {
                 if (config.assemble != null) sh (config.assemble + options)
-                else sh './gradlew $options clean build -x test'
+                else sh './gradlew ${options} clean build -x test'
             }
 
             stage('Test') {
                 if (config.test != null) sh (config.test + options)
-                else sh './gradlew $options test'
+                else sh './gradlew ${options} test'
             }
 
             stage('Upload') {
