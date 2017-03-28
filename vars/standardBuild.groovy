@@ -15,18 +15,35 @@ def call(body) {
             def options = ' -PartUsername=$ARTUSERNAME -PartPassword=$ARTPASSWORD -Daws.accessKeyId=$AWS_ID -Daws.secretKey=$AWS_KEY '
 
             stage('Assemble') {
-                if (config.assemble != null) sh (config.assemble + options)
-                else sh "./gradlew $options clean build -x test"
+                if (config.assemble != null) {
+                    sh (config.assemble + options)
+                } else {
+                    sh "./gradlew $options clean build -x test"
+                }
             }
 
             stage('Test') {
-                if (config.test != null) sh (config.test + options)
-                else sh "./gradlew $options test"
+                if (config.test != null) {
+                    sh (config.test + options)
+                } else {
+                    sh "./gradlew $options test"
+                }
+            }
+
+            stage('Regression') {
+                if (config.regression != null) {
+                    sh (config.regression + options)
+                } else {
+                    sh "./gradlew $options regression"
+                }
             }
 
             stage('Upload') {
-                if (config.upload != null) sh (config.upload + options)
-                else echo "upload"
+                if (config.upload != null) {
+                    sh (config.upload + options)
+                } else {
+                    sh "./gradlew $options -Denv=dev s3Upload; ./gradlew $options -Denv=rc s3Upload"
+                }
             }
 
             stage('Deploy') {
