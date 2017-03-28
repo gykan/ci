@@ -3,6 +3,7 @@ FROM jenkins:2.32.3
 RUN /usr/local/bin/install-plugins.sh \
     docker:0.16.2 \
     token-macro:latest \
+    workflow-aggregator:2.5 \
     github-oauth:0.25 \
     github-organization-folder:1.6
 
