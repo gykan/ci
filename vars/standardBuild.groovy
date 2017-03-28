@@ -12,7 +12,7 @@ def call(body) {
                          [$class: 'UsernamePasswordMultiBinding', credentialsId: 'aws-credentials',
                           usernameVariable: 'AWS_ID', passwordVariable: 'AWS_KEY']]) {
 
-            options = '-PartUsername=$ARTUSERNAME -PartPassword=$ARTPASSWORD -Daws.accessKeyId=$AWS_ID -Daws.secretKey=$AWS_KEY'
+            options = ' -PartUsername=$ARTUSERNAME -PartPassword=$ARTPASSWORD -Daws.accessKeyId=$AWS_ID -Daws.secretKey=$AWS_KEY '
 
             stage('Assemble') {
                 if (config.assemble != null) sh (config.assemble + options)
