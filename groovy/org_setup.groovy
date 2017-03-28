@@ -10,6 +10,12 @@ if (!orgName) {
     return
 }
 
+def libRepo = System.getenv('BUILD_LIB_REPO')
+
+if (libRepo == null) {
+    libRepo = "ci"
+}
+
 def configXml = """<?xml version='1.0' encoding='UTF-8'?>
 <jenkins.branch.OrganizationFolder plugin="branch-api@2.0.8">
   <actions/>
@@ -24,7 +30,7 @@ def configXml = """<?xml version='1.0' encoding='UTF-8'?>
               <checkoutCredentialsId>SAME</checkoutCredentialsId>
               <scanCredentialsId>git-credentials</scanCredentialsId>
               <repoOwner>${orgName}</repoOwner>
-              <repository>ci</repository>
+              <repository>${libRepo}</repository>
               <includes>*</includes>
               <excludes></excludes>
             </scm>
