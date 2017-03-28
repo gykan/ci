@@ -16,12 +16,12 @@ def call(body) {
 
             stage('Assemble') {
                 if (config.assemble != null) sh (config.assemble + options)
-                else sh './gradlew ${options} clean build -x test'
+                else sh "./gradlew $options clean build -x test"
             }
 
             stage('Test') {
                 if (config.test != null) sh (config.test + options)
-                else sh './gradlew ${options} test'
+                else sh "./gradlew $options test"
             }
 
             stage('Upload') {
