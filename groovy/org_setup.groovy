@@ -27,12 +27,6 @@ def configXml = """<?xml version='1.0' encoding='UTF-8'?>
               <repository>ci</repository>
               <includes>*</includes>
               <excludes></excludes>
-              <buildOriginBranch>true</buildOriginBranch>
-              <buildOriginBranchWithPR>true</buildOriginBranchWithPR>
-              <buildOriginPRMerge>false</buildOriginPRMerge>
-              <buildOriginPRHead>false</buildOriginPRHead>
-              <buildForkPRMerge>true</buildForkPRMerge>
-              <buildForkPRHead>false</buildForkPRHead>
             </scm>
           </retriever>
           <defaultVersion>master</defaultVersion>
@@ -62,12 +56,6 @@ def configXml = """<?xml version='1.0' encoding='UTF-8'?>
       <scanCredentialsId>git-credentials</scanCredentialsId>
       <checkoutCredentialsId>SAME</checkoutCredentialsId>
       <pattern>.*</pattern>
-      <buildOriginBranch>true</buildOriginBranch>
-      <buildOriginBranchWithPR>true</buildOriginBranchWithPR>
-      <buildOriginPRMerge>false</buildOriginPRMerge>
-      <buildOriginPRHead>false</buildOriginPRHead>
-      <buildForkPRMerge>true</buildForkPRMerge>
-      <buildForkPRHead>false</buildForkPRHead>
     </org.jenkinsci.plugins.github__branch__source.GitHubSCMNavigator>
   </navigators>
   <projectFactories>
