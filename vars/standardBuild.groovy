@@ -11,18 +11,27 @@ def call(body) {
                           usernameVariable: 'ARTUSERNAME', passwordVariable: 'ARTPASSWORD'],
                          [$class: 'UsernamePasswordMultiBinding', credentialsId: 'aws-credentials',
                           usernameVariable: 'AWS_ID', passwordVariable: 'AWS_KEY']]) {
+
             options = '-PartUsername=$ARTUSERNAME -PartPassword=$ARTPASSWORD -Daws.accessKeyId=$AWS_ID -Daws.secretKey=$AWS_KEY'
+
             stage('Assemble') {
-                sh (config.assemble || './gradlew clean build -x test') + options
+                if (config.assemble != null) sh (config.assemble + options)
+                else sh './gradlew $options clean build -x test'
             }
+
             stage('Test') {
-                sh (config.assemble || './gradlew test') + options
+                if (config.test != null) sh (config.test + options)
+                else sh './gradlew $options test'
             }
+
             stage('Upload') {
-                sh config.upload || echo "upload"
+                if (config.upload != null) sh (config.upload + options)
+                else echo "upload"
             }
+
             stage('Deploy') {
-                sh config.deploy || echo "Deploying..."
+                if (config.deploy != null) sh (config.deploy + options)
+                else echo "Deploying..."
             }
         }
     }
