@@ -20,7 +20,7 @@ def call(body) {
             ]
     ) {
 //Lets define a unique label for this build.
-        def label = "${env.JOB_NAME}.${env.JOB_NAME}.${env.BUILD_NUMBER}".replace('-', '_').replace('/', '_')
+        def label = "${env.JOB_NAME}.${env.BUILD_NUMBER}".replace('-', '_').replace('/', '_')
         podTemplate(
                 label: label,
                 containers: [
@@ -60,14 +60,14 @@ def call(body) {
                 ]
         ) {
             //Lets use pod template (refernce by label)
-            node {
+            node() {
                 checkout scm
                 def options = ' -PartUsername=$ARTUSERNAME -PartPassword=$ARTPASSWORD -Daws.accessKeyId=$AWS_ACCESS_KEY -Daws.secretKey=$AWS_SECRET_ACCESS_KEY '
                 def v = getGradleProperty("version")
                 def serviceName = getGradleProperty("buildContext")
 
                 stage ('Assemble') {
-                    container(name: 'gradle') {
+//                    container('gradle') {
                         if (config.assemble != null) {
                             if (config.assemble) {
                                 sh(config.assemble + options)
@@ -75,11 +75,11 @@ def call(body) {
                         } else {
                             sh "./gradlew $options clean build -x test"
                         }
-                    }
+//                    }
                 }
 
                 stage ('Test') {
-                    container(name: 'gradle') {
+//                    container('gradle') {
                         if (config.test != null) {
                             if (config.test) {
                                 sh(config.test + options)
@@ -87,11 +87,11 @@ def call(body) {
                         } else {
                             sh "./gradlew $options test"
                         }
-                    }
+//                    }
                 }
 
                 stage ('Regression') {
-                    container(name: 'gradle') {
+//                    container('gradle') {
                         if (config.regression != null) {
                             if (config.regression) {
                                 sh(config.regression + options)
@@ -99,7 +99,7 @@ def call(body) {
                         } else {
                             sh "./gradlew $options regression"
                         }
-                    }
+//                    }
                 }
 
                 stage ('Docker image') {
@@ -109,18 +109,18 @@ def call(body) {
                     )
                             {
                                 stage 'Docker build'
-                                container(name: 'docker') {
+//                                container('docker') {
                                     def imageName = "nykanon/gykan:${serviceName}-latest"
                                     sh "docker build -t ${imageName} ."
                                     image = docker.image(imageName)
                                     image.push()
-                                }
+//                                }
                             }
                 }
 
                 stage ('Upload rc') {
                     def env = env.BRANCH_NAME == 'development' ? "rc" : "dev"
-                    container(name: 'gradle') {
+//                    container('gradle') {
                         if (config.upload != null) {
                             if (config.upload) {
                                 sh(config.upload + " -Denv=" + env + " " + options)
@@ -128,7 +128,7 @@ def call(body) {
                         } else {
                             sh "./gradlew $options -Denv=${env} s3Upload"
                         }
-                    }
+//                    }
                 }
             }
         }
