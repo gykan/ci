@@ -60,7 +60,7 @@ def call(body) {
                 ]
         ) {
             //Lets use pod template (refernce by label)
-            node(label) {
+            node {
                 checkout scm
                 def options = ' -PartUsername=$ARTUSERNAME -PartPassword=$ARTPASSWORD -Daws.accessKeyId=$AWS_ACCESS_KEY -Daws.secretKey=$AWS_SECRET_ACCESS_KEY '
                 def v = getProperty("version")
