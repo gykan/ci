@@ -19,10 +19,8 @@ def call(body) {
                     ]
             ]
     ) {
-        def serviceName = readFile('gradle.properties') =~ 'buildContext=(.+)'
-        serviceName ? serviceName[0][1] : null
 //Lets define a unique label for this build.
-        def label = "${serviceName}.${env.JOB_NAME}.${env.BUILD_NUMBER}".replace('-', '_').replace('/', '_')
+        def label = "${env.JOB_NAME}.${env.JOB_NAME}.${env.BUILD_NUMBER}".replace('-', '_').replace('/', '_')
         podTemplate(
                 label: label,
                 containers: [
@@ -65,7 +63,8 @@ def call(body) {
             node(label) {
                 checkout scm
                 def options = ' -PartUsername=$ARTUSERNAME -PartPassword=$ARTPASSWORD -Daws.accessKeyId=$AWS_ACCESS_KEY -Daws.secretKey=$AWS_SECRET_ACCESS_KEY '
-                def v = version()
+                def v = getProperty("version")
+                def serviceName = getProperty("buildContext")
 
                 stage 'Setup gradle'
                 container(name: 'gradle') {
@@ -136,7 +135,7 @@ def call(body) {
     }
 }
 
-def version() {
-    def matcher = readFile('gradle.properties') =~ 'version=(.+)'
+def getProperty(name) {
+    def matcher = readFile('gradle.properties') =~ "${name}=(.+)"
     matcher ? matcher[0][1] : null
 }
