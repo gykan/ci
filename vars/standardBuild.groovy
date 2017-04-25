@@ -66,12 +66,6 @@ def call(body) {
                 def v = getGradleProperty("version")
                 def serviceName = getGradleProperty("buildContext")
 
-                stage ('Setup gradle') {
-                    container(name: 'gradle') {
-                        sh "apt-get update && apt-get install git -y"
-                    }
-                }
-
                 stage ('Assemble') {
                     container(name: 'gradle') {
                         if (config.assemble != null) {
