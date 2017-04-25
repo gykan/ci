@@ -65,6 +65,7 @@ def call(body) {
                 def options = ' -PartUsername=$ARTUSERNAME -PartPassword=$ARTPASSWORD -Daws.accessKeyId=$AWS_ACCESS_KEY -Daws.secretKey=$AWS_SECRET_ACCESS_KEY '
                 def v = getGradleProperty("version")
                 def serviceName = getGradleProperty("description")
+                def env = env.BRANCH_NAME == 'development' ? "rc" : "dev"
 
                 stage ('Assemble') {
 //                    container('gradle') {
@@ -103,7 +104,6 @@ def call(body) {
                 }
 
                 stage ('Upload rc') {
-                    def env = env.BRANCH_NAME == 'development' ? "rc" : "dev"
 //                    container('gradle') {
                         if (config.upload != null) {
                             if (config.upload) {
@@ -115,21 +115,27 @@ def call(body) {
 //                    }
                 }
 
+                stage('Docker') {
+                    if (config.docker != null && config.docker) {
+                        docker.withRegistry(
+                                'https://index.docker.io/v1/',
+                                'docker-hub-credentials'
+                        )
+                                {
+                                    def imageName = "nykanon/gykan:${serviceName}-latest"
+                                    sh "docker build -t ${imageName} ."
+                                    image = docker.image(imageName)
+                                    image.push()
+                                }
+                    } else {
+                        echo "Skip Docker"
+                    }
+                }
+
                 stage('Deploy') {
                     if (config.deploy != null) {
-                        if (config.deploy.equals("docker")) {
-                            docker.withRegistry(
-                                    'https://index.docker.io/v1/',
-                                    'docker-hub-credentials'
-                            )
-                                    {
-                                        def imageName = "nykanon/gykan:${serviceName}-latest"
-                                        sh "docker build -t ${imageName} ."
-                                        image = docker.image(imageName)
-                                        image.push()
-                                    }
-                        } else {
-                            sh(config.deploy + options)
+                        if (config.deploy) {
+                            sh(config.deploy + " -Denv=" + env + " " + options)
                         }
                     } else {
                         echo "Deploying..."
