@@ -66,13 +66,13 @@ def call(body) {
                 def v = getGradleProperty("version")
                 def serviceName = getGradleProperty("buildContext")
 
-                stage 'Setup gradle' {
+                stage ('Setup gradle') {
                     container(name: 'gradle') {
                         sh "apt-get update && apt-get install git -y"
                     }
                 }
 
-                stage 'Assemble' {
+                stage ('Assemble') {
                     container(name: 'gradle') {
                         if (config.assemble != null) {
                             if (config.assemble) {
@@ -84,7 +84,7 @@ def call(body) {
                     }
                 }
 
-                stage 'Test' {
+                stage ('Test') {
                     container(name: 'gradle') {
                         if (config.test != null) {
                             if (config.test) {
@@ -96,7 +96,7 @@ def call(body) {
                     }
                 }
 
-                stage 'Regression' {
+                stage ('Regression') {
                     container(name: 'gradle') {
                         if (config.regression != null) {
                             if (config.regression) {
@@ -108,7 +108,7 @@ def call(body) {
                     }
                 }
 
-                stage 'Docker image' {
+                stage ('Docker image') {
                     docker.withRegistry(
                             'https://index.docker.io/v1/',
                             'docker-hub-credentials'
@@ -124,7 +124,7 @@ def call(body) {
                             }
                 }
 
-                stage 'Upload rc' {
+                stage ('Upload rc') {
                     def env = env.BRANCH_NAME == 'development' ? "rc" : "dev"
                     container(name: 'gradle') {
                         if (config.upload != null) {
