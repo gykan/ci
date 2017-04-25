@@ -66,68 +66,74 @@ def call(body) {
                 def v = getGradleProperty("version")
                 def serviceName = getGradleProperty("buildContext")
 
-                stage 'Setup gradle'
-                container(name: 'gradle') {
-                    sh "apt-get update && apt-get install git -y"
-                }
-
-                stage 'Assemble'
-                container(name: 'gradle') {
-                    if (config.assemble != null) {
-                        if (config.assemble) {
-                            sh(config.assemble + options)
-                        }
-                    } else {
-                        sh "./gradlew $options clean build -x test"
+                stage 'Setup gradle' {
+                    container(name: 'gradle') {
+                        sh "apt-get update && apt-get install git -y"
                     }
                 }
 
-                stage 'Test'
-                container(name: 'gradle') {
-                    if (config.test != null) {
-                        if (config.test) {
-                            sh(config.test + options)
-                        }
-                    } else {
-                        sh "./gradlew $options test"
-                    }
-                }
-
-                stage 'Regression'
-                container(name: 'gradle') {
-                    if (config.regression != null) {
-                        if (config.regression) {
-                            sh(config.regression + options)
-                        }
-                    } else {
-                        sh "./gradlew $options regression"
-                    }
-                }
-
-                stage 'Docker image'
-                docker.withRegistry(
-                        'https://index.docker.io/v1/',
-                        'docker-hub-credentials'
-                )
-                        {
-                            stage 'Docker build'
-                            container(name: 'docker') {
-                                def imageName = "nykanon/gykan:${serviceName}-latest"
-                                sh "docker build -t ${imageName} ."
-                                image = docker.image(imageName)
-                                image.push()
+                stage 'Assemble' {
+                    container(name: 'gradle') {
+                        if (config.assemble != null) {
+                            if (config.assemble) {
+                                sh(config.assemble + options)
                             }
+                        } else {
+                            sh "./gradlew $options clean build -x test"
                         }
+                    }
+                }
 
-                def env = env.BRANCH_NAME == 'development' ? "rc" : "dev"
-                stage 'Upload rc'
-                container(name: 'gradle') {
-                    if (config.upload != null) {
-                        if (config.upload) {
-                            sh(config.upload + " -Denv=" + env + " " + options)
+                stage 'Test' {
+                    container(name: 'gradle') {
+                        if (config.test != null) {
+                            if (config.test) {
+                                sh(config.test + options)
+                            }
+                        } else {
+                            sh "./gradlew $options test"
                         }
-                    } else {
-                        sh "./gradlew $options -Denv=${env} s3Upload"
+                    }
+                }
+
+                stage 'Regression' {
+                    container(name: 'gradle') {
+                        if (config.regression != null) {
+                            if (config.regression) {
+                                sh(config.regression + options)
+                            }
+                        } else {
+                            sh "./gradlew $options regression"
+                        }
+                    }
+                }
+
+                stage 'Docker image' {
+                    docker.withRegistry(
+                            'https://index.docker.io/v1/',
+                            'docker-hub-credentials'
+                    )
+                            {
+                                stage 'Docker build'
+                                container(name: 'docker') {
+                                    def imageName = "nykanon/gykan:${serviceName}-latest"
+                                    sh "docker build -t ${imageName} ."
+                                    image = docker.image(imageName)
+                                    image.push()
+                                }
+                            }
+                }
+
+                stage 'Upload rc' {
+                    def env = env.BRANCH_NAME == 'development' ? "rc" : "dev"
+                    container(name: 'gradle') {
+                        if (config.upload != null) {
+                            if (config.upload) {
+                                sh(config.upload + " -Denv=" + env + " " + options)
+                            }
+                        } else {
+                            sh "./gradlew $options -Denv=${env} s3Upload"
+                        }
                     }
                 }
             }
