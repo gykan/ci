@@ -63,8 +63,8 @@ def call(body) {
             node {
                 checkout scm
                 def options = ' -PartUsername=$ARTUSERNAME -PartPassword=$ARTPASSWORD -Daws.accessKeyId=$AWS_ACCESS_KEY -Daws.secretKey=$AWS_SECRET_ACCESS_KEY '
-                def v = getProperty("version")
-                def serviceName = getProperty("buildContext")
+                def v = getGradleProperty("version")
+                def serviceName = getGradleProperty("buildContext")
 
                 stage 'Setup gradle'
                 container(name: 'gradle') {
@@ -135,7 +135,7 @@ def call(body) {
     }
 }
 
-def getProperty(name) {
+def getGradleProperty(name) {
     def matcher = readFile('gradle.properties') =~ "${name}=(.+)"
     matcher ? matcher[0][1] : null
 }
