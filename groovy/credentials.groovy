@@ -28,3 +28,5 @@ addPassCredentials('git-credentials', 'GIT_USER_NAME', 'GIT_USER_KEY')
 addPassCredentials('artifactory-credentials', 'ARTIFACTORY_USER_NAME', 'ARTIFACTORY_USER_KEY')
 
 addPassCredentials('aws-credentials', 'AWS_CLIENT_ID', 'AWS_CLIENT_SECRET')
+
+addPassCredentials('docker-hub-credentials', 'DOCKER_USER_NAME', 'DOCKER_PASSWORD')
